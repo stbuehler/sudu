@@ -50,6 +50,7 @@ Sudu::Application.routes.draw do
         post :unlock
         post :restore
         post :confirm
+        post :make_admin
       end
     end
   end

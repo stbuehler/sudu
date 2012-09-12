@@ -45,6 +45,17 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label">Admin Account</label>
+			<div class="controls">
+<% if @user.admin -%>
+				<div class="controls-text"><%= link_to @user.email, admin_admin_path(@user.admin) %></div>
+<% else -%>
+				<%= link_to 'Create Admin account', make_admin_admin_user_path(@user), :method => :post, :class => 'btn btn-warning' %>
+				<br />With same email/password
+<% end -%>
+			</div>
+		</div>
+		<div class="control-group">
 			<%= f.label :username, class: "control-label" %>
 			<div class="controls"><%= f.text_field :username %></div>
 		</div>

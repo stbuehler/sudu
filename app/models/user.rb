@@ -19,6 +19,8 @@ class User < ActiveRecord::Base
   has_many :all_todo_items, :through => :projects, :source => :items
   has_many :changes, :class_name => "TodoItemChanges"
 
+  has_one :admin, :foreign_key => :email, :primary_key => :email
+
   # Setup accessible (or protected) attributes for your model
   attr_accessible :username, :email, :password, :password_confirmation, :remember_me, :deleted_at,
      :locked, :feed_authentication_token, :confirmed_at

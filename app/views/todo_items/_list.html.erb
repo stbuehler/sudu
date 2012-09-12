@@ -27,7 +27,7 @@
 		</td>
 		<td><%= link_to item.title, item %></td>
 		<td class="priority"><%= item.priority_to_s %></td>
-		<td class="oneline"><%= item.lastchange.created_at.to_date %></td>
+		<td class="oneline"><%= item.last_change.created_at.to_date %></td>
 		<td class="oneline suspend <%= 'suspend-done' if item.active? && item.suspend_till %>"><%= item.suspend_till %></td>
 		<td class="oneline"><%= item.created_at.to_date %></td>
 <% end %>

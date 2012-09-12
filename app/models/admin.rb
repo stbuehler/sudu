@@ -10,4 +10,6 @@ class Admin < ActiveRecord::Base
   attr_accessible :email, :password
   #, :password_confirmation, :remember_me
   # attr_accessible :title, :body
+
+  has_one :user, :foreign_key => :email, :primary_key => :email
 end

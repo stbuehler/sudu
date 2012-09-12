@@ -170,4 +170,33 @@ class Admin::UsersController < Admin::AdminController
       end
     end
   end
+
+  def make_admin
+    @user = User.find(params[:id])
+    error = nil
+    if @user.active_for_authentication?
+      @admin = Admin.new(email: @user.email)
+      @admin.encrypted_password = @user.encrypted_password
+      @admin.save(:validate => false)
+      if !@admin.valid?
+        error = "Administrator already exists: " + @admin.errors.to_a.join(',')
+      end
+    else
+      error = "Cannot copy inactive user to admins"
+    end
+
+    respond_to do |format|
+      unless error
+        format.html { redirect_to admin_admin_url(@admin), notice: "Administrator #{@admin.email} was successfully created from user." }
+        format.json { head :no_content }
+      else
+        flash[:alert] = error
+        format.html { render :action => "show" }
+        format.json {
+          @user.errors[:base] << error
+          render :json => { :errors => @user.errors }, :status => :unprocessable_entity
+        }
+      end
+    end
+  end
 end

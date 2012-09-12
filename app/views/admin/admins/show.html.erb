@@ -15,6 +15,17 @@
 
 	<div class="form-horizontal">
 		<div class="control-group">
+			<label class="control-label">User Account</label>
+			<div class="controls"><div class="controls-text">
+<% if @admin.user -%>
+				<%= link_to @admin.user.username, admin_user_path(@admin.user) %>
+<% else -%>
+				No user account with the same email registered
+<% end -%>
+			</div></div>
+		</div>
+
+		<div class="control-group">
 			<%= f.label :email, class: "control-label" %>
 			<div class="controls"><%= f.email_field :email %></div>
 		</div>

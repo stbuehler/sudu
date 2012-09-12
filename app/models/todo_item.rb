@@ -5,6 +5,7 @@ class TodoItem < ActiveRecord::Base
   has_one :project, :through => :list
   
   has_many :changes, :class_name => "TodoItemChanges", :dependent => :destroy
+  has_one :last_change, :class_name => "TodoItemChanges", :order => "created_at DESC"
   
   has_and_belongs_to_many :users
 
@@ -44,9 +45,5 @@ class TodoItem < ActiveRecord::Base
   def description
     lastdescchange = changes.select(:description).where("description IS NOT NULL").order("created_at DESC").first
     lastdescchange && lastdescchange.description 
-  end
-
-  def lastchange
-    changes.order("created_at DESC").first
   end
 end

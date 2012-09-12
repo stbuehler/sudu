@@ -62,7 +62,9 @@ th, .oneline {
 .monospace {
   font-family: monospace
 }
-
+.controls > .controls-text {
+  padding-top: 5px;
+}
 
 #error_explanation {
   width: 450px;
