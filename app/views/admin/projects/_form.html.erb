@@ -1,0 +1,86 @@
+<%= form_for(@project, :url => admin_project_path(@project)) do |f| -%>
+	<% if @project.errors.any? -%>
+		<div id="error_explanation">
+			<h2><%= pluralize(@project.errors.count, "error") %> prohibited this project from being saved:</h2>
+
+			<ul>
+				<% @project.errors.full_messages.each do |msg| -%>
+					<li><%= msg %></li>
+				<% end -%>
+			</ul>
+		</div>
+	<% end -%>
+
+	<div class="input-prepend">
+		<%= f.label :name, class: 'btn' %>
+		<%= f.text_field :name %>
+	</div>
+
+	<h2>Roles</h2>
+
+	<ul>
+		<% availAbilities = Ability::Project_Abilities.keys %>
+		<% roleNewID = -1 %>
+		<% @project.roles.each do |role| %>
+			<% role_prefix = role.new_record? ? roleNewID : role.id %>
+			<% roleNewID -= 1 if role.new_record? %>
+				<li>
+					<%= fields_for "project[roles][#{role_prefix}]", role do |fr| %>
+						<div>
+						<%= fr.text_field :name %>
+						<% unless role.new_record? %>
+							<%= link_to 'Delete role', admin_project_role_destroy_path(@project, role), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger' %>
+						<% end %>
+						</div>
+
+						<div style="display:inline-block;vertical-align:top;padding-right: 20px;">
+							Permissions:
+							<ul>
+								<% role.each_ability_value do |a,has| %>
+									<li>
+										<%= hidden_field_tag "project[roles][#{role_prefix}][was_ability][#{a}]", has %>
+										<label class="checkbox oneline">
+											<%= check_box_tag "project[roles][#{role_prefix}][set_ability][#{a}]", true, has %>
+											<%= Ability.stringify(a) %>
+										</label>
+									</li>
+								<% end %>
+							</ul>
+						</div>
+						<div style="display:inline-block;vertical-align:top;">
+							Users:
+							<ul>
+								<% roleMembers = {} %>
+								<% role.users.each do |u| %>
+									<li>
+										<% roleMembers[u.id] = true %>
+										<%= hidden_field_tag "project[roles][#{role_prefix}][had_member][#{u.id}]", true %>
+										<label class="checkbox">
+											<%= check_box_tag "project[roles][#{role_prefix}][still_member][#{u.id}]", true, true %>
+											<%= link_to u.username + ' <' + u.email + '>', admin_user_path(u) %>
+										</label>
+									</li>
+								<% end %>
+								<% @project.users.each do |u| %>
+									<% next if roleMembers[u.id] %>
+									<li><label class="checkbox">
+										<%= check_box_tag "project[roles][#{role_prefix}][new_member][#{u.id}]", true, false %>
+										<%= link_to u.username + ' <' + u.email + '>', admin_user_path(u) %>
+									</label></li>
+								<% end %>
+								<li>
+									<%= text_field_tag "project[roles][#{role_prefix}][new_members]", '', placeholder: 'New users' %>
+								</li>
+							</ul>
+						</div>
+					<% end -%>
+				</li>
+			<% end -%>
+  </ul>
+
+
+	<div class="actions">
+		<%= f.submit :class => 'btn btn-primary' %>
+		<%= link_to 'Delete project', admin_project_path(@project), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger' %>
+	</div>
+<% end %>

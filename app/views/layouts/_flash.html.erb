@@ -1,0 +1,15 @@
+<div class="flash">
+	<% notices.each do |msg| -%>
+		<div class="alert alert-info">
+			<%= msg %>
+			<button type="button" class="close" data-dismiss="alert">×</button>
+		</div>
+	<% end -%>
+	<% alerts.each do |msg| -%>
+		<div class="alert">
+			<%= msg %>
+			<button type="button" class="close" data-dismiss="alert">×</button>
+		</div>
+	<% end -%>
+</div>
+<% flash_clear -%>

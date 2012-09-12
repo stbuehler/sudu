@@ -1,0 +1,22 @@
+<%= form_for(@todo_list) do |f| %>
+  <% if @todo_list.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@todo_list.errors.count, "error") %> prohibited this todo list from being saved:</h2>
+
+      <ul>
+      <% @todo_list.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+	<div class="input-prepend">
+		<%= f.label :name, class: 'btn' %>
+		<%= f.text_field :name %>
+	</div>
+	<div class="actions">
+		<%= f.submit :class => 'btn btn-primary' %>
+		<a class="btn btn-danger" href="<%= todo_list_path(@todo_list) %>" data-confirm="Are you sure?" data-method="delete" rel="nofollow">Delete list</a>
+	</div>
+<% end %>

@@ -1,0 +1,92 @@
+.nav-admin > li > a {
+  color: #DA4F49 ;
+}
+.nav-admin > .active > a, .nav-admin > .active > a:hover {
+  background-color: #DA4F49;
+}
+.nav-head {
+  border-bottom: 1px solid #DDD;
+  margin-bottom: 20px;
+}
+label.error { color: red; }
+.control-label {
+  font-weight: bold;
+}
+
+.field_with_errors {
+  padding: 2px;
+  background-color: red;
+  display: table;
+}
+
+td.tableid {
+  text-align: right;
+}
+
+th, .oneline {
+  white-space: nowrap !important;
+}
+
+.table tbody tr.priority-low td.priority {
+  background-color: #dff0d8;
+}
+
+.table tbody tr.priority-high td.priority, .table tbody tr.priority-urgent td.priority, .table tbody tr td.suspend-done {
+  background-color: #f2dede;
+}
+
+.table tbody tr.priority-normal td.priority {
+  background-color: #fcf8e3;
+}
+
+.table tbody tr.suspended td.priority, .table tbody tr.suspended td.suspend {
+  background-color: #d9edf7;
+}
+
+.table tbody tr.priority-low:hover td.priority {
+  background-color: #d0e9c6;
+}
+
+.table tbody tr.priority-high:hover td.priority, .table tbody tr.priority-urgent:hover td.priority, .table tbody tr:hover td.suspend-done {
+  background-color: #ebcccc;
+}
+
+.table tbody tr.priority-normal:hover td.priority {
+  background-color: #faf2cc;
+}
+
+.table tbody tr.suspended:hover td.priority, .table tbody tr.suspended:hover td.suspend {
+  background-color: #c4e3f3;
+}
+
+.monospace {
+  font-family: monospace
+}
+
+
+#error_explanation {
+  width: 450px;
+  border: 2px solid red;
+  padding: 7px;
+  padding-bottom: 0;
+  margin-bottom: 20px;
+  background-color: #f0f0f0;
+  h2 {
+    text-align: left;
+    font-weight: bold;
+    padding: 5px 5px 5px 15px;
+    font-size: 12px;
+    line-height: 100%;
+    margin: -7px;
+    margin-bottom: 0px;
+    background-color: #c00;
+    color: #fff;
+  }
+  ul {
+    margin-bottom: 0;
+  }
+  ul li {
+    font-size: 12px;
+    list-style: square;
+  }
+}

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sudu - Admin</title>
+  <%= stylesheet_link_tag    "application", :media => "all" %>
+  <%= javascript_include_tag "application" %>
+  <%= csrf_meta_tags %>
+</head>
+<body>
+
+<div class="container-fluid">
+	<div class="row-fluid">
+		<div class="nav-head span10 offset1">
+			<b>Sudu - Shared todo list manager</b>
+			<div class="btn-group pull-right">
+				<a class="btn btn-danger dropdown-toggle" data-toggle="dropdown" href="#">Session<span class="caret"></span></a>
+				<ul class="dropdown-menu">
+					<li><%= link_to (user_signed_in? ? "Dashboard" : "Sign in"), root_path %></li>
+					<li><%= link_to (admin_signed_in? ? "Admin Dashboard" : "Admin Sign in"), admin_root_path %></li>
+<% if user_signed_in? %>
+					<li class="divider"></li>
+					<li>
+    					<%= link_to "Account", edit_user_registration_path %>
+    					<%= link_to "Sign out", destroy_user_session_path, :method => :delete %>
+    				</li>
+<% end %>
+<% if admin_signed_in? %>
+					<li class="divider"></li>
+					<li>
+    					<%= link_to "Admin Account", admin_admin_path(current_admin) %>
+						<%= link_to "Admin Sign out", destroy_admin_session_path, :method => :delete %>
+    				</li>
+<% end %>
+				</ul>
+			</div>
+		</div>
+		<div class="span1">
+		</div>
+	</div>
+	<div class="row-fluid">
+		<% if admin_signed_in? %>
+			<div class="span2 offset1">
+				<div class="well well-small"><ul class="nav nav-list nav-admin">
+					<%= menu_link "Dashboard", admin_dashboard_index_path, "nav-header" %>
+					<li class="divider"></li>
+					<%= menu_link "Administrators", admin_admins_path, "nav-header" %>
+					<%= menu_link "Users", admin_users_path, "nav-header" %>
+					<%= menu_link "Projects", admin_projects_path, "nav-header" %>
+				</ul></div>
+			</div>
+			<div class="span8">
+				<%= render "layouts/flash" %>
+				
+				<%= yield %>
+			</div>
+		<% else %>
+			<div class="span6 offset3">
+				<%= render "layouts/flash" %>
+				
+				<%= yield %>
+			</div>
+		<% end %>
+	</div>
+</body>
+</html>

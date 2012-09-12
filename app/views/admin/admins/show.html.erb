@@ -1,0 +1,44 @@
+<h2>Administrator <%= @admin.email %></h2>
+
+<%= form_for(@admin, :url => @admin.new_record? ? admin_admins_path : admin_admin_path(@admin)) do |f| -%>
+	<% if @admin.errors.any? -%>
+		<div id="error_explanation">
+			<h2><%= pluralize(@admin.errors.count, "error") %> prohibited this admin account from being saved:</h2>
+
+			<ul>
+				<% @admin.errors.full_messages.each do |msg| -%>
+					<li><%= msg %></li>
+				<% end -%>
+			</ul>
+		</div>
+	<% end -%>
+
+	<div class="form-horizontal">
+		<div class="control-group">
+			<%= f.label :email, class: "control-label" %>
+			<div class="controls"><%= f.email_field :email %></div>
+		</div>
+
+		<div class="control-group">
+			<%= f.label :password, class: "control-label" %>
+			<div class="controls">
+				<%= f.password_field :password, :autocomplete => "off" %>
+				<br /><i>(leave blank if you don't want to change it)</i>
+			</div>
+		</div>
+
+<% unless @admin.new_record? -%>
+		<div class="control-group">
+			<%= f.label :password_confirmation, class: "control-label" %>
+			<div class="controls">
+				<%= f.password_field :password_confirmation, :autocomplete => "off" %>
+			</div>
+		</div>
+<% end -%>
+	</div>
+
+	<div class="actions">
+		<%= f.submit @admin.new_record? ? "Create" : "Update", class: 'btn btn-primary' %></div>
+	</div>
+
+<% end -%>

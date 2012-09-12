@@ -1,0 +1,23 @@
+<h1>
+	Todo List: <%= link_to @todo_list.project.name, @todo_list.project %> - <%= @todo_list.name %>
+	<a href="<%= edit_todo_list_path(@todo_list) %>"><i class="icon-pencil" style="vertical-align: middle"></i></a>
+</h1>
+
+<h3>Items</h3>
+
+<ul class="nav nav-tabs">
+	<li class="<%= 'active' unless params[:all] %>"><a href="<%= todo_list_path(@todo_list) %>">Active</a></li>
+	<li class="<%= 'active' if params[:all] %>"><a href="<%= todo_list_path(@todo_list) %>?all=1">All</a></li>
+</ul>
+<% unless params[:all] -%>
+<%= render :partial => "todo_items/list", :locals => { :items => @todo_list.items.active } %>
+<% else -%>
+<%= render :partial => "todo_items/list", :locals => { :items => @todo_list.items.unscoped.order("id DESC") } %>
+<% end -%>
+
+<% if can? :create, @todo_list.project
+	@todo_item = TodoItem.new(:list => @todo_list, :users => [current_user], :open => true) -%>
+	<h3>New Todo Item</h3>
+
+	<%= render "todo_lists/new_item" %>
+<% end -%>

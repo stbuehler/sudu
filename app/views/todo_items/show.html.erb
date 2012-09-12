@@ -1,0 +1,209 @@
+
+<h1><%= link_to @todo_item.project.name, @todo_item.project %> - <%= link_to @todo_item.list.name, @todo_item.list %>: <%= @todo_item.title %></h1>
+
+<% cancomment = (can? :comment, @todo_item.project) %>
+<% canfinish = cancomment and ((can? :finish_all, @todo_item.project) or (can? :finish_own, @todo_item.project and @todo_item.users.include?(current_user))) %>
+
+<%= form_for(@todo_item) do |f| %>
+  <% if @todo_item.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@todo_item.errors.count, "error") %> prohibited this item from being updated:</h2>
+
+      <ul>
+      <% @todo_item.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+<div class="form-horizontal">
+	<div class="control-group">
+		<label class="control-label">Status</label>
+		<div class="controls">
+<% if canfinish %>
+			<%= hidden_field_tag "todo_item[open_old]", @todo_item.open %>
+			<select name="todo_item[open]">
+<% else %>
+			<select disabled>
+<% end %>
+				<option value="true" <%= 'selected' if @todo_item.open %>>Open</option>
+				<option value="false" <%= 'selected' unless @todo_item.open %>>Closed</option>
+			</select>
+		</div>
+	</div>
+
+	<div class="control-group">
+		<label class="control-label">Priority</label>
+		<div class="controls">
+<% if cancomment and can? :assign_priority, @todo_item.project %>
+			<%= hidden_field_tag "todo_item[priority_old]", @todo_item.priority %>
+			<select name="todo_item[priority]">
+<% else %>
+			<select disabled>
+<% end %>
+<% TodoItem::PRIORITIES.each_index do |i| %>
+				<option value="<%= i %>" <%= 'selected' if i == @todo_item.priority %>><%= TodoItem.priority_to_s(i) %></option>
+<% end %>
+			</select>
+		</div>
+	</div>
+
+	<div class="control-group">
+		<label class="control-label">Suspend</label>
+		<div class="controls">
+<% if canfinish %>
+			<%= hidden_field_tag "todo_item[suspend_till_old]", (@todo_item.suspend_till ? @todo_item.suspend_till.to_default_s : '') %>
+			<%= check_box_tag "todo_item[suspend_use]", true, @todo_item.suspend_till %>
+			<%= date_select("todo_item", "suspend_till", {:start_year => Time.now.year}, { :style => "width: auto;"}) %>
+<% else %>
+			<input type="text" disabled value="<%= @todo_item.suspend_till || "Not suspended" %>">
+<% end %>
+		</div>
+	</div>
+
+	<div class="control-group">
+		<label class="control-label">Assigned to</label>
+		<div class="controls"><ul>
+			<% canassign = cancomment and (can? :assign, @todo_item.project) %>
+			<% users = {} %>
+			<% @todo_item.users.each do |user| %>
+				<% users[user] = true %>
+				<% if canassign %>
+					<%= hidden_field_tag "todo_item[users_old][#{user.id}]", true %>
+				<% end %>
+				<li><label class="checkbox">
+					<% if canassign %>
+						<%= check_box_tag "todo_item[users_keep][#{user.id}]", true, @keep_users[user.id] || @keep_user_default %>
+					<% else %>
+						<input type="checkbox" checked disabled>
+					<% end %>
+					<%= user.username %>
+				</label></li>
+			<% end %>
+			<% @todo_item.project.users.each do |user| %>
+				<% next if users[user] %>
+				<li><label class="checkbox">
+					<% if canassign %>
+						<%= check_box_tag "todo_item[users_new][#{user.id}]", true, @add_users[user.id] || false %>
+					<% else %>
+						<input type="checkbox" disabled>
+					<% end %>
+					<%= user.username %>
+				</label></li>
+			<% end %>
+		</ul></div>
+	</div>
+
+  <div class="control-group">
+    <%= f.label :title, class: "control-label" %>
+    <div class="controls">
+    	<% if cancomment %>
+			<%= f.text_field :title, :class => "span8" %>
+	  	<% else %>
+    		<input class="span8" type="text" value="<%= @todo_item.title %>" disabled>
+	   	<% end %>
+    </div>
+  </div>
+
+  <div class="control-group">
+    <%= f.label :description, class: "control-label" %>
+    <div class="controls">
+    	<% if cancomment %>
+    		<ul class="nav nav-tabs">
+    			<li class="active"><a href="#show-description" data-toggle="tab">Show</a></li>
+    			<li><a href="#edit-description" data-toggle="tab">Edit</a></li>
+    			<li id="li-preview-description" style="display: none"><a href="#preview-description" data-toggle="tab">Preview</a></li>
+    		</ul>
+    		<div class="tab-content">
+    			<div class="tab-pane active" id="show-description">
+    				<%= markdown(@description) %>
+    			</div>
+    			<div class="tab-pane" id="edit-description">
+		    		<div><%= text_area_tag "todo_item[description]", @description, :size => "80x15", :class => "span8 monospace" %></div>
+		    		<a class="btn btn-info" style="display: none; margin-top: 10px;" id="preview-button">Preview description</a>
+    			</div>
+    			<div class="tab-pane" id="preview-description">
+    			</div>
+    		</div>
+<script type="text/javascript">
+$('#preview-button').show().click(function () {
+	markdown_preview('<%= markdown_path %>', '#todo_item_description', '#preview-description', '#li-preview-description', '#li-preview-description a');
+});
+</script>
+    	<% else %>
+    		<textarea class="span8" cols="80" rows="15" disabled><%= @todo_item.description.to_s %></textarea>
+    	<% end %>
+    </div>
+  </div>
+
+<% if cancomment %>
+  <div class="control-group">
+    <%= f.label :comment, "Add comment", class: "control-label" %>
+    <div class="controls">
+    		<ul id="ul-comment-tabs" class="nav nav-tabs" style="display: none">
+    			<li class="active"><a href="#edit-comment" data-toggle="tab">Edit</a></li>
+    			<li><a id="a-preview-comment" href="#preview-comment" data-toggle="tab">Preview</a></li>
+    		</ul>
+    		<div class="tab-content">
+    			<div class="tab-pane active" id="edit-comment">
+		    		<div><%= text_area_tag "todo_item[comment]", @comment, :size => "80x8", :class => "span8 monospace" %></div>
+		    		<a class="btn btn-info" style="display: none; margin-top: 10px;" id="comment-button">Preview comment</a>
+    			</div>
+    			<div class="tab-pane" id="preview-comment">
+    			</div>
+    		</div>
+<script type="text/javascript">
+$('#comment-button').show().click(function () {
+	markdown_preview('<%= markdown_path %>', '#todo_item_comment', '#preview-comment', '#ul-comment-tabs', '#a-preview-comment');
+});
+</script>
+    </div>
+  </div>
+
+  <div class="control-group">
+    <div class="controls">
+    	<%= f.submit "Update item", :class => 'btn btn-primary' %>
+		<% if can? :manage_item, @todo_item.project %>
+	 		<a class="btn btn-danger" href="<%= todo_item_path(@todo_item) %>" data-confirm="Are you sure?" data-method="delete" rel="nofollow">Delete</a>
+		<% end %>
+	</div>
+  </div>
+<% end %>
+</div>
+<% end %>
+
+<h2>Changes</h2>
+<hr>
+<% @todo_item.changes.order("created_at DESC").each do |change| %>
+  <div class="todo-item-change">
+    <div class="change-head">
+      <span class="change-created"><%= change.created_at %></span> -
+      <span class="change-author"><%= change.user.username %></span>
+    <% unless change.status.to_s.empty? %>
+    	<span class="change-status">: <%= change.status.split(/\n+/).join(', ') %></span>
+    <% end %>
+    </div>
+    <% unless change.comment.to_s.empty? %>
+    	<b>Comment: </b>
+    	<div class="change-comment well well-small"><%= markdown(change.comment) %></div>
+    <% end %>
+    <% unless change.description.to_s.empty? %>
+    	<div class="accordion">
+    		<div class="accordion-group">
+	    		<div class="accordion-heading">
+			    	<a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#change-description-<%= change.id %>">
+	    				Description changed
+	    			</a>
+	    		</div>
+	    		<div class="change-description accodrion-body collapse" id="change-description-<%= change.id %>">
+	    			<div class="accordion-inner">
+	    				<div class="well well-small"><%= markdown(change.description.to_s) %></div>
+	    			</div>
+	    		</div>
+    		</div>
+    	</div>
+    <% end %>
+  </div>
+  <hr>
+<% end %>

@@ -1,0 +1,20 @@
+<h1>Projects</h1>
+
+<ul>
+	<% @projects.each do |project| %>
+		<li>
+			<%= link_to project.name, project_path(project) %>
+			<% if can? :manage, project -%>
+		 		<a href="<%= edit_project_path(project) %>"><i class="icon-pencil" style="vertical-align: middle"></i></a>
+		 		<a href="<%= project_path(project) %>" data-confirm="Are you sure?" data-method="delete" rel="nofollow"><i class="icon-trash" style="vertical-align: middle"></i></a>
+		 	<% end -%>
+		</li>
+	<% end %>
+</ul>
+
+<h3>Create new project</h3>
+
+<%= form_tag(projects_path, :class => "form-inline") do %>
+	<%= text_field_tag "project[name]", '', :placeholder => "Name" %>
+	<%= submit_tag "Create project", :class => 'btn btn-success' %>
+<% end %>

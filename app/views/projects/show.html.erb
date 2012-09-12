@@ -1,0 +1,44 @@
+<h1>
+	Project <%= @project.name %>
+	<% if can? :manage, @project %>
+		<a href="<%= edit_project_path(@project) %>"><i class="icon-pencil" style="vertical-align: middle"></i></a>
+	<% end %>
+</h1>
+
+<% @project.roles.each do |role| %>
+  <div>
+    <b><%= role.name %></b><br>
+
+    <ul>
+    <% role.users.each do |user| %>
+      <li><%= user.email %></li>
+    <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<h3>Lists</h3>
+
+<ul>
+	<% @project.lists.each do |list| %>
+		<li>
+			<%= link_to list.name, list %>
+			<% if can? :manage_list, @project %>
+		 		<a href="<%= edit_todo_list_path(list) %>"><i class="icon-pencil" style="vertical-align: middle"></i></a>
+		 		<a href="<%= todo_list_path(list) %>" data-confirm="Are you sure?" data-method="delete" rel="nofollow"><i class="icon-trash" style="vertical-align: middle"></i></a>
+		 	<% end %>
+		</li>
+	<% end %>
+</ul>
+
+<% if !can? :manage, @project or !@project.last_managing_user %> 
+<%= link_to 'Leave project', project_leave_path(@project), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger' %>
+<br /><br />
+<% end %>
+
+<% if can? :manage_list, Project %>
+  <%= form_tag(project_lists_path(@project), :class => "form-inline") do %>
+    <%= text_field_tag "new_list[name]", '', :placeholder => "Name" %>
+    <%= submit_tag "Create Todo List", :class => 'btn btn-success' %>
+  <% end %>
+<% end %>
