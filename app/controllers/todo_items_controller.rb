@@ -69,7 +69,7 @@ class TodoItemsController < ApplicationController
           @todo_item.users << u
         end
       end
-      if (can? :finish_all, @todo_item.project) || (can? :finish_own, @todo_item.project && @todo_item.users.include?(current_user))
+      if (can? :finish_all, @todo_item.project) or (can? :finish_own, @todo_item.project and @todo_item.users.include?(current_user))
         if p[:open] != p[:open_old]
           if p[:open] == "true"
             unless @todo_item.open
@@ -85,12 +85,12 @@ class TodoItemsController < ApplicationController
         end
         
         if p[:suspend_use]
-          if (p[:suspend_till_old].empty? || suspdate != Date.parse(p[:suspend_till_old])) && @todo_item.suspend_till != suspdate
+          if (p[:suspend_till_old].empty? or suspdate != Date.parse(p[:suspend_till_old])) and @todo_item.suspend_till != suspdate
             @todo_item.suspend_till = suspdate
             change.status_append "Suspended item till #{suspdate}"
           end
         else
-          if !p[:suspend_till_old].empty? && @todo_item.suspend_till
+          if !p[:suspend_till_old].empty? and @todo_item.suspend_till
             @todo_item.suspend_till = nil
             change.status_append "Removed suspension"
           end
@@ -102,18 +102,18 @@ class TodoItemsController < ApplicationController
           change.status_append "Priority changed to #{@todo_item.priority_to_s}"
         end
       end
-      if @todo_item.title != p[:title] && !p[:title].empty?
+      if @todo_item.title != p[:title] and !p[:title].empty?
         change.status_append "Changed title to '#{p[:title]}'"
         @todo_item.title = p[:title]
       end
-      if @todo_item.description != p[:description] && !p[:description].empty?
+      if @todo_item.description != p[:description] and !p[:description].empty?
         change.status_append "Description updated"
         @description = change.description = p[:description] # stored in changes for history
       end
       @comment = change.comment = p[:comment]
-      changed = !change.status.blank? || !change.comment.blank? 
+      changed = (!change.status.blank? or !change.comment.blank?)
       @todo_item.save! if @todo_item.errors.empty?
-      @todo_item.changes << change if changed && @todo_item.errors.empty?
+      @todo_item.changes << change if changed and @todo_item.errors.empty?
       raise ActiveRecord::Rollback unless @todo_item.errors.empty?
     end
 

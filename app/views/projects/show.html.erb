@@ -31,7 +31,7 @@
 	<% end %>
 </ul>
 
-<% if !can? :manage, @project || !@project.last_managing_user %>
+<% if !can? :manage, @project or !@project.last_managing_user %>
 <%= link_to 'Leave project', project_leave_path(@project), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger' %>
 <br /><br />
 <% end %>

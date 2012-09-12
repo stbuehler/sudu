@@ -2,7 +2,7 @@
 <h1><%= link_to @todo_item.project.name, @todo_item.project %> - <%= link_to @todo_item.list.name, @todo_item.list %>: <%= @todo_item.title %></h1>
 
 <% cancomment = (can? :comment, @todo_item.project) %>
-<% canfinish = cancomment && ((can? :finish_all, @todo_item.project) || (can? :finish_own, @todo_item.project && @todo_item.users.include?(current_user))) %>
+<% canfinish = (cancomment and ((can? :finish_all, @todo_item.project) or (can? :finish_own, @todo_item.project and @todo_item.users.include?(current_user)))) %>
 
 <%= form_for(@todo_item) do |f| %>
   <% if @todo_item.errors.any? %>
@@ -36,7 +36,7 @@
 	<div class="control-group">
 		<label class="control-label">Priority</label>
 		<div class="controls">
-<% if cancomment && can? :assign_priority, @todo_item.project %>
+<% if (cancomment and can? :assign_priority, @todo_item.project) %>
 			<%= hidden_field_tag "todo_item[priority_old]", @todo_item.priority %>
 			<select name="todo_item[priority]">
 <% else %>
@@ -57,7 +57,7 @@
 			<%= check_box_tag "todo_item[suspend_use]", true, @todo_item.suspend_till %>
 			<%= date_select("todo_item", "suspend_till", {:start_year => Time.now.year}, { :style => "width: auto;"}) %>
 <% else %>
-			<input type="text" disabled value="<%= @todo_item.suspend_till || "Not suspended" %>">
+			<div class="controls-text"><%= @todo_item.suspend_till || "Not suspended" %></div>
 <% end %>
 		</div>
 	</div>
@@ -65,7 +65,7 @@
 	<div class="control-group">
 		<label class="control-label">Assigned to</label>
 		<div class="controls"><ul>
-			<% canassign = cancomment && (can? :assign, @todo_item.project) %>
+			<% canassign = (cancomment and (can? :assign, @todo_item.project)) %>
 			<% users = {} %>
 			<% @todo_item.users.each do |user| %>
 				<% users[user] = true %>

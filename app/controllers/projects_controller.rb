@@ -143,7 +143,7 @@ class ProjectsController < ApplicationController
         role.users.delete(current_user)
       end
 
-      unless @project.managing_users.count > 0 || !wasadmin
+      unless @project.managing_users.count > 0 or !wasadmin
         @project.errors[:base] << "No project administrator remaining"
       end
       raise ActiveRecord::Rollback unless @project.errors.empty?
@@ -193,7 +193,7 @@ private
       v[:had_member].keys.each do |userid|
         next if v[:still_member][userid]
         u = User.find(userid)
-        if u.nil? || u.deleted_at
+        if u.nil? or u.deleted_at
           @project.errors[:base] << "Userid #{userid} does not exist"
           next
         end
@@ -202,7 +202,7 @@ private
       end
       v[:new_member].keys.each do |userid|
         u = User.find(userid)
-        if u.nil? || u.deleted_at
+        if u.nil? or u.deleted_at
           @project.errors[:base] << "Userid #{userid} does not exist"
           next
         end
@@ -210,7 +210,7 @@ private
       end
       v[:new_members].split('/ +/').each do |username|
         u = User.find_by_username(username)
-        if u.nil? || u.deleted_at
+        if u.nil? or u.deleted_at
           @project.errors[:base] << "Username #{username} does not exist"
           next
         end

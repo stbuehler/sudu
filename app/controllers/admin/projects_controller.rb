@@ -114,7 +114,7 @@ private
       v[:had_member].keys.each do |userid|
         next if v[:still_member][userid]
         u = User.find(userid)
-        if u.nil? || u.deleted_at
+        if u.nil? or u.deleted_at
           @project.errors[:base] << "Userid #{userid} does not exist"
           next
         end
@@ -122,7 +122,7 @@ private
       end
       v[:new_member].keys.each do |userid|
         u = User.find(userid)
-        if u.nil? || u.deleted_at
+        if u.nil? or u.deleted_at
           @project.errors[:base] << "Userid #{userid} does not exist"
           next
         end
@@ -130,7 +130,7 @@ private
       end
       v[:new_members].split('/ +/').each do |username|
         u = User.find_first_by_auth_conditions({ login: username })
-        if u.nil? || u.deleted_at
+        if u.nil? or u.deleted_at
           @project.errors[:base] << "User #{username} does not exist"
           next
         end

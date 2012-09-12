@@ -24,7 +24,7 @@ class Admin::UsersController < Admin::AdminController
     @user.save
 
     respond_to do |format|
-      if @user.valid? && @user.errors.empty? then
+      if @user.valid? and @user.errors.empty? then
         format.html { redirect_to admin_users_url, notice: 'User was successfully created.' }
         format.json { render json: @user, status: :created, location: admin_user_path(@user) }
       else

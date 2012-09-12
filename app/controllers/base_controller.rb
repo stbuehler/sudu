@@ -9,6 +9,6 @@ class BaseController < ActionController::Base
 
 private
   def layout_by_resource
-    devise_controller? && resource_name == :admin ? "admin/admin" : "application"
+    (devise_controller? and resource_name == :admin) ? "admin/admin" : "application"
   end
 end

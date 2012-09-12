@@ -36,7 +36,7 @@ class Admin::AdminsController < Admin::AdminController
     p = params[:admin]
     @admin = Admin.find(params[:id])
     @admin.email = p[:email]
-    if !p[:password].blank? || !p[:password_confirmation].blank?
+    if !p[:password].blank? or !p[:password_confirmation].blank?
       if p[:password] != p[:password_confirmation]
         @admin.errors[:password_confirmation] << "doesn't match password"
       else

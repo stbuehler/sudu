@@ -31,11 +31,11 @@ class TodoItem < ActiveRecord::Base
   end
 
   def active?
-    open && (suspend_till.nil? || suspend_till <= Date.current)
+    open and (suspend_till.nil? or suspend_till <= Date.current)
   end
 
   def suspended?
-    (!suspend_till.nil? || suspend_till > Date.current)
+    (!suspend_till.nil? or suspend_till > Date.current)
   end
 
   def priority_to_s
