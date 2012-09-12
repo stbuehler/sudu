@@ -35,7 +35,7 @@ class TodoItem < ActiveRecord::Base
   end
 
   def suspended?
-    (!suspend_till.nil? or suspend_till > Date.current)
+    (!suspend_till.nil? and suspend_till > Date.current)
   end
 
   def priority_to_s
