@@ -45,7 +45,7 @@ class User < ActiveRecord::Base
   end
 
   def validate_deleted_no_projects
-    if deleted_at and projects.count > 0
+    if deleted_at && projects.count > 0
       errors[:base] << "Cannot delete account while it is member of projects"
     end
   end

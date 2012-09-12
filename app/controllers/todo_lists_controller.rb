@@ -60,7 +60,7 @@ class TodoListsController < ApplicationController
     authorize! :create, @todo_list.project 
 
     prio = TodoItem::NORMAL
-    prio = params[:todo_item][:priority].to_i if can? :priority, @todo_list.project and !params[:todo_item][:priority].blank? 
+    prio = params[:todo_item][:priority].to_i if can? :priority, @todo_list.project && !params[:todo_item][:priority].blank? 
     @todo_item = @todo_list.items.create(:users => [current_user], :title => params[:todo_item][:title], :priority => prio, :open => true)
     if @todo_item.valid?
       @todo_item.changes.create(:user => current_user, :description => params[:todo_item][:description], :status => 'created ' + @todo_item.title)

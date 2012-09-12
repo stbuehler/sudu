@@ -143,7 +143,7 @@ class ProjectsController < ApplicationController
         role.users.delete(current_user)
       end
 
-      unless @project.managing_users.count > 0 or !wasadmin
+      unless @project.managing_users.count > 0 || !wasadmin
         @project.errors[:base] << "No project administrator remaining"
       end
       raise ActiveRecord::Rollback unless @project.errors.empty?
