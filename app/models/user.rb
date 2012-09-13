@@ -19,6 +19,7 @@ class User < ActiveRecord::Base
   has_many :todo_lists, :through => :projects, :source => :lists
   has_many :all_todo_items, :through => :projects, :source => :items
   has_many :changes, :class_name => "TodoItemChanges"
+  has_many :all_changes, :class_name => "TodoItemChanges", :through => :all_todo_items, :source => :changes
 
   has_one :admin, :foreign_key => :email, :primary_key => :email
 
@@ -55,6 +56,10 @@ class User < ActiveRecord::Base
 
   def active_for_authentication?
     super and !locked and deleted_at.nil?
+  end
+
+  def self.find_first_by_feed_token(key)
+    where(:feed_authentication_token => key).first
   end
 
   def ensure_feed_authentication_token

@@ -21,16 +21,16 @@
 <% if user_signed_in? %>
 					<li class="divider"></li>
 					<li>
-    					<%= link_to "Account", edit_user_registration_path %>
-    					<%= link_to "Sign out", destroy_user_session_path, :method => :delete %>
-    				</li>
+						<%= link_to "Account", edit_user_registration_path %>
+						<%= link_to "Sign out", destroy_user_session_path, :method => :delete %>
+					</li>
 <% end %>
 <% if admin_signed_in? %>
 					<li class="divider"></li>
 					<li>
-    					<%= link_to "Admin Account", admin_admin_path(current_admin) %>
+						<%= link_to "Admin Account", admin_admin_path(current_admin) %>
 						<%= link_to "Admin Sign out", destroy_admin_session_path, :method => :delete %>
-    				</li>
+					</li>
 <% end %>
 				</ul>
 			</div>
@@ -41,7 +41,12 @@
 			<div class="span2 offset1">
 				<div class="well well-small">
 					<ul class="nav nav-list">
-						<li><b>Welcome <%= current_user.username %></b></li>
+						<li>
+							<b>Welcome <%= current_user.username %></b>
+							<a href="<%= feed_path(:token => current_user.feed_authentication_token) %>" class="pull-right">
+								<i class="feedicon-small"></i>
+							</a>
+						</li>
 						<li class="divider"></li>
 						<%= menu_link "Dashboard", dashboard_index_path, "nav-header" %>
 						<li class="divider"></li>

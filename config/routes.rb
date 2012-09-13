@@ -28,6 +28,8 @@ Sudu::Application.routes.draw do
 
   match :markdown, :controller => :markdown, :action => :index, :via => [ :get, :put, :post ]
 
+  get :feed, :to => 'feed#index'
+
   devise_scope :admin do
     get :new_admin_session, :path => 'admin/login', :to => "devise/sessions#new"
     post :admin_session, :path => 'admin/login', :to => "devise/sessions#create"
