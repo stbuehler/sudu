@@ -10,6 +10,15 @@
   </div>
 
   <div class="control-group">
+    <label class="control-label">Feed token</label>
+    <div class="controls">
+      <input type="text" value="<%= resource.feed_authentication_token %>" disabled="disabled">
+      <%= link_to 'Reset token', reset_feed_token_path, :method => :post, :class => 'btn btn-warning' %>
+      <br /><i>(Used to access to the RSS feeds without password, keep it secret!)</i>
+    </div>
+  </div>
+
+  <div class="control-group">
     <%= f.label :email, class: "control-label" %>
     <div class="controls"><%= f.email_field :email %></div>
   </div>

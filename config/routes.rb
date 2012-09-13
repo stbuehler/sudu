@@ -4,7 +4,8 @@ Sudu::Application.routes.draw do
     post :user_session, :path => 'login', :to => "devise/sessions#create"
     match :destroy_user_session, :path => 'logout', :to => "devise/sessions#destroy", :via => [ :post, :delete ]
 
-    get :new_user_registration, :path => 'sign_up', :to => "devise/registrations#new"
+    get :new_user_registration, :path => 'sign_up', :to => "users/registrations#new"
+    post :reset_feed_token, :path => 'users/reset_feed_token', :to => "users/registrations#reset_feed_token"
   end
   devise_for :users, :skip => :sessions, :controllers => { :registrations => 'users/registrations' } 
 

@@ -27,6 +27,7 @@ private
 
   def respond
     limit!
+    request.format = 'atom'
     respond_to do |format|
       format.atom { render 'feed', :layout => false }
     end

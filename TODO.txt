@@ -1,3 +1,5 @@
+* list project/list name in item list view
+
 * rss feed (with access token) for changes on item collections / project / meta stuff: invites, ...
 * ajax loading item collections, support ordering by columns
 * custom item collections

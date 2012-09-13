@@ -7,11 +7,11 @@ atom_feed :root_url => root_url do |feed|
     feed.entry change, :url => todo_item_url(item) + "##{change.id}" do |entry|
       entry.title("changed ##{item.id}: " + (change.status.blank? ? 'comment' : change.status.split(/\n+/).join(', ')))
       content = ''
-      if change.comment
+      unless change.comment.blank?
         content += '<div><b>Comment: </b><br />' + markdown(change.comment) + '</div>'
       end
       d = change.current_description
-      if d
+      unless d.blank?
         content += '<hr />' unless content.blank?
         content += '<div><b>Description: </b><br />' + markdown(d) + '</div>'
       end

@@ -121,7 +121,7 @@ class TodoItemsController < ApplicationController
         change.status_append "Changed title to '#{p[:title]}'"
         @todo_item.title = p[:title]
       end
-      if @todo_item.description != p[:description] and !p[:description].empty?
+      if @todo_item.description != p[:description]
         change.status_append "Description updated"
         @description = change.description = p[:description] # stored in changes for history
       end
