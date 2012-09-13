@@ -59,6 +59,8 @@ module Sudu
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'
 
+    config.allow_registration = false
+
     if File.exists?(File.join(File.dirname(__FILE__), 'site.rb'))
       instance_eval File.read(File.join(File.dirname(__FILE__), 'site.rb'))
     else
