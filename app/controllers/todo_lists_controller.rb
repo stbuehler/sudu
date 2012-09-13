@@ -47,7 +47,7 @@ class TodoListsController < ApplicationController
     @todo_list = TodoList.find(params[:todo_list_id])
     authorize! :create, @todo_list.project 
 
-    @todo_item = TodoItem.new(:list => @todo_list, :users => [current_user], :open => true)
+    @todo_item = TodoItem.new(:list => @todo_list)
 
     respond_to do |format|
       format.html { render }
@@ -56,23 +56,33 @@ class TodoListsController < ApplicationController
   end
 
   def create_item
-    @todo_list = TodoList.find(params[:todo_list_id])
-    authorize! :create, @todo_list.project 
+    if params[:project_id]
+      @project = Project.find(params[:project_id])
+      todo_list = @project.lists.find(params[:todo_list_id])
+    elsif params[:force_todo_list_id]
+      todo_list = @todo_list = TodoList.find(params[:force_todo_list_id])
+    else
+      todo_list = TodoList.find(params[:todo_list_id])
+    end
+    authorize! :create, todo_list.project
 
     prio = TodoItem::NORMAL
-    prio = params[:todo_item][:priority].to_i if can? :priority, @todo_list.project and !params[:todo_item][:priority].blank? 
-    @todo_item = @todo_list.items.create(:users => [current_user], :title => params[:todo_item][:title], :priority => prio, :open => true)
-    if @todo_item.valid?
-      @todo_item.changes.create(:user => current_user, :description => params[:todo_item][:description], :status => 'created ' + @todo_item.title)
+    prio = params[:todo_item][:priority].to_i if can? :priority, todo_list.project and !params[:todo_item][:priority].blank?
+    todo_list.transaction do
+      @todo_item = todo_list.items.create(:users => [current_user], :title => params[:todo_item][:title], :priority => prio, :open => true)
+      if @todo_item.valid?
+        @todo_item.changes.create(:user => current_user, :description => params[:todo_item][:description], :status => 'created ' + @todo_item.title)
+      end
+      raise ActiveRecord::Rollback unless @todo_item.errors.empty?
     end
 
     respond_to do |format|
-      if @todo_item.valid?
+      if @todo_item.errors.empty?
         format.html { redirect_to @todo_item, notice: 'Todo Item was successfully created.' }
         format.json { render json: @todo_item, status: :created, location: @todo_item }
       else
         format.html { render action: "new_item" }
-        format.json { render json: @todo_list.errors, status: :unprocessable_entity }
+        format.json { render json: @todo_item.errors, status: :unprocessable_entity }
       end
     end
   end

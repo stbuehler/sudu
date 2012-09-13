@@ -1,39 +1,62 @@
-<%= form_for(@todo_item, :url => todo_list_items_path(@todo_item.list)) do |f| %>
-  <% if @todo_item.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@todo_item.errors.count, "error") %> prohibited this todo_item from being created:</h2>
+<%= form_for(@todo_item, :url => create_item_todo_lists_path) do |f| %>
+	<% if @todo_item.errors.any? %>
+		<div id="error_explanation">
+			<h2><%= pluralize(@todo_item.errors.count, "error") %> prohibited this todo_item from being created:</h2>
 
-      <ul>
-      <% @todo_item.errors.full_messages.each do |msg| %>
-        <li><%= msg %></li>
-      <% end %>
-      </ul>
-    </div>
-  <% end %>
-
-<div class="form-horizontal">
-  <div class="control-group">
-    <%= f.label :title, class: "control-label" %>
-    <div class="controls"><%= f.text_field :title, :class => "span8" %></div>
-  </div>
-<% if can? :priority, @todo_item.project -%>
-	<div class="control-group">
-	<%= f.label :priority, class: "control-label" %>
-		<div class="controls">
-			<select name="todo_item[priority]">
-<% TodoItem::PRIORITIES.each_index do |i| -%>
-				<option value="<%= i %>" <%= 'selected' if i == @todo_item.priority %>><%= TodoItem.priority_to_s(i) %></option>
-<% end -%>
-			</select>
+			<ul>
+				<% @todo_item.errors.full_messages.each do |msg| %>
+					<li><%= msg %></li>
+				<% end %>
+			</ul>
 		</div>
-	</div>
+	<% end %>
+
+	<div class="form-horizontal">
+		<div class="control-group">
+			<%= f.label :title, class: "control-label" %>
+			<div class="controls"><%= f.text_field :title, :class => "wide" %></div>
+		</div>
+		<div class="control-group">
+			<%= label :todo_list_id, :list, class: "control-label" %>
+			<div class="controls">
+<% if @todo_list -%>
+				<%= hidden_field_tag 'force_todo_list_id', @todo_list.id %>
+				<div class="controls-text"><%= @todo_list.project.name + ': ' + @todo_list.name %></div>
+<% else -%>
+<%   if @project -%>
+				<%= hidden_field_tag 'project_id', @project.id %>
+<%   end -%>
+<%   lists = @project ? @project.lists : current_user.todo_lists %>
+				<select id="todo_list_id" name="todo_list_id">
+<%   lists.each do |list| -%>
+<%     next unless can? :create, list.project -%>
+					<option value="<%= list.id %>" <%= 'selected' if list == @todo_item.list %>><%= (@project ? '' : list.project.name + ': ') + list.name %></option>
+<%   end -%>
+				</select>
+<%   if @project -%>
+				<span class="controls-text"> in <%= @project.name %></span>
+<%   end -%>
 <% end -%>
-  <div class="control-group">
-    <%= f.label :description, class: "control-label" %>
-    <div class="controls"><%= f.text_area :description, :size => "80x15", :class => "span8" %></div>
-  </div>
-  <div class="control-group">
-    <div class="controls"><%= f.submit :class => "btn btn-primary" %></div>
-  </div>
+			</div>
+		</div>
+<% if @todo_item.project.nil? or can? :priority, @todo_item.project -%>
+		<div class="control-group">
+			<%= f.label :priority, class: "control-label" %>
+			<div class="controls">
+				<select name="todo_item[priority]">
+<% TodoItem::PRIORITIES.each_index do |i| -%>
+					<option value="<%= i %>" <%= 'selected' if i == @todo_item.priority %>><%= TodoItem.priority_to_s(i) %></option>
+<% end -%>
+				</select>
+			</div>
+		</div>
+<% end -%>
+		<div class="control-group">
+			<%= f.label :description, class: "control-label" %>
+			<div class="controls"><%= f.text_area :description, :size => "80x15", :class => "wide" %></div>
+		</div>
+		<div class="control-actions">
+			<%= f.submit :class => "btn btn-primary" %>
+		</div>
 </div>
 <% end %>

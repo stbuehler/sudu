@@ -2,8 +2,13 @@
 
 <h3>Your Active Items</h3>
 
-<%= render :partial => "todo_items/list", :locals => { :items => current_user.todo_items.active, :perpage => 15, :pageparam => :page_own } %>
+<%= render :partial => "todo_items/list", :locals => { :items => current_user.todo_items.active.default_order, :perpage => 15, :pageparam => :page_own } %>
 
 <h3>All Active Items</h3>
 
-<%= render :partial => "todo_items/list", :locals => { :items => current_user.all_todo_items.active, :perpage => 10, :pageparam => :page_all } %>
+<%= render :partial => "todo_items/list", :locals => { :items => current_user.all_todo_items.active.default_order, :perpage => 10, :pageparam => :page_all } %>
+
+<h1>New Todo Item</h1>
+
+<% @todo_item = TodoItem.new() -%>
+<%= render "todo_lists/new_item" %>

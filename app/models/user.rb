@@ -16,6 +16,7 @@ class User < ActiveRecord::Base
   has_and_belongs_to_many :todo_items
   has_and_belongs_to_many :project_roles
   has_many :projects, :through => :project_roles, :uniq => true
+  has_many :todo_lists, :through => :projects, :source => :lists
   has_many :all_todo_items, :through => :projects, :source => :items
   has_many :changes, :class_name => "TodoItemChanges"
 

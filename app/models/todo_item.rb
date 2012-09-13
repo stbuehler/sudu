@@ -6,6 +6,7 @@ class TodoItem < ActiveRecord::Base
   
   has_many :changes, :class_name => "TodoItemChanges", :dependent => :destroy
   has_one :last_change, :class_name => "TodoItemChanges", :order => "created_at DESC"
+  has_one :last_description_change, :class_name => "TodoItemChanges", :order => "created_at DESC", :conditions => "description IS NOT NULL"
   
   has_and_belongs_to_many :users
 
@@ -18,15 +19,19 @@ class TodoItem < ActiveRecord::Base
   PRIORITIES = [ :low, :normal, :high, :urgent ]
   validates :priority, :numericality => { :only_integer => true, :greater_than_or_equal_to => 0, :less_than => 4 } 
 
-  default_scope :order => 'priority DESC, id DESC'
-  
+  after_initialize :init_default_priority
+
   class << self
     def active
       where(:open => true).where(arel_table[:suspend_till].eq(nil).or(arel_table[:suspend_till].gt(Date.current).not))
     end
-    
+
     def priority_to_s(p)
       PRIORITIES[p].to_s.capitalize
+    end
+
+    def default_order
+      order('priority DESC, id DESC')
     end
   end
 
@@ -43,7 +48,12 @@ class TodoItem < ActiveRecord::Base
   end
 
   def description
-    lastdescchange = changes.select(:description).where("description IS NOT NULL").order("created_at DESC").first
-    lastdescchange && lastdescchange.description 
+    lastdescchange = last_description_change
+    lastdescchange && lastdescchange.description
+  end
+
+private
+  def init_default_priority
+    self.priority ||= NORMAL
   end
 end

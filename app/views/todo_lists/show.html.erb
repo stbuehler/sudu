@@ -10,13 +10,13 @@
 	<li class="<%= 'active' if params[:all] %>"><a href="<%= todo_list_path(@todo_list) %>?all=1">All</a></li>
 </ul>
 <% unless params[:all] -%>
-<%= render :partial => "todo_items/list", :locals => { :items => @todo_list.items.active } %>
+<%= render :partial => "todo_items/list", :locals => { :items => @todo_list.items.active.default_order } %>
 <% else -%>
-<%= render :partial => "todo_items/list", :locals => { :items => @todo_list.items.unscoped.order("id DESC") } %>
+<%= render :partial => "todo_items/list", :locals => { :items => @todo_list.items.order("id DESC") } %>
 <% end -%>
 
 <% if can? :create, @todo_list.project
-	@todo_item = TodoItem.new(:list => @todo_list, :users => [current_user], :open => true, :priority => TodoItem::NORMAL) -%>
+	@todo_item = TodoItem.new(:list => @todo_list) -%>
 	<h3>New Todo Item</h3>
 
 	<%= render "todo_lists/new_item" %>

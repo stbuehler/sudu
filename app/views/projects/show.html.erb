@@ -42,3 +42,10 @@
     <%= submit_tag "Create Todo List", :class => 'btn btn-success' %>
   <% end %>
 <% end %>
+
+<% if can? :create, @project
+	@todo_item = TodoItem.new() -%>
+	<h3>New Todo Item</h3>
+
+	<%= render "todo_lists/new_item" %>
+<% end -%>

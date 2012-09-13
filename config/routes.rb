@@ -20,7 +20,9 @@ Sudu::Application.routes.draw do
     resources :todo_item_changes, :path => :changes, :only => [:show]
   end
   resources :todo_lists, :path => :lists, :only => [:show,:edit,:update,:destroy] do
-    post :items, :action => :create_item
+    collection do
+      post :create_item
+    end
     get :item_new, :path => 'items/new', :action => :new_item
   end
 
