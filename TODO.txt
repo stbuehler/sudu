@@ -1,10 +1,7 @@
-* copy user to admins
-
 * rss feed (with access token) for changes on item collections / project / meta stuff: invites, ...
 * ajax loading item collections, support ordering by columns
 * custom item collections
 
-* move tickets (only if assigned users exist in target project)
 * project invite: invite users (remove direct adding)
 ** by login (mail) of registered users
 ** by one-time link/code (i.e. only for one user)

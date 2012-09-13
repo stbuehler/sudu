@@ -34,6 +34,23 @@
 	</div>
 
 	<div class="control-group">
+		<%= label "todo_item[todo_list_id]", :list, class: "control-label" %>
+		<div class="controls">
+<% if can? :move, @todo_item.project -%>
+			<%= hidden_field_tag "todo_item[todo_list_id_old]", @todo_item.list.id %>
+<%   lists = current_user.projects.to_a.select { |p| can? :move, p }.map(&:lists).flatten  %>
+			<select id="todo_item_todo_list_id" name="todo_item[todo_list_id]">
+<%   lists.each do |list| -%>
+				<option value="<%= list.id %>" <%= 'selected' if list == @todo_item.list %>><%= list.project.name + ': ' + list.name %></option>
+<%   end -%>
+			</select>
+<% else -%>
+			<div class="controls-text"><%= list.project.name + ': ' + list.name %></div>
+<% end -%>
+		</div>
+	</div>
+
+	<div class="control-group">
 		<label class="control-label">Priority</label>
 		<div class="controls">
 <% if (cancomment and can? :assign_priority, @todo_item.project) -%>
@@ -68,13 +85,13 @@
 			<% canassign = (cancomment and (can? :assign, @todo_item.project)) -%>
 			<% users = {} -%>
 			<% @todo_item.users.each do |user| -%>
-				<% users[user] = true -%>
+				<% users[user.id] = true -%>
 				<% if canassign -%>
 					<%= hidden_field_tag "todo_item[users_old][#{user.id}]", true %>
 				<% end -%>
 				<li><label class="checkbox">
 					<% if canassign -%>
-						<%= check_box_tag "todo_item[users_keep][#{user.id}]", true, @keep_users[user.id] || @keep_user_default %>
+						<%= check_box_tag "todo_item[users_keep][#{user.id}]", true, (@keep_users[user.id] || @keep_user_default) %>
 					<% else -%>
 						<input type="checkbox" checked disabled>
 					<% end -%>
@@ -82,10 +99,10 @@
 				</label></li>
 			<% end -%>
 			<% @todo_item.project.users.each do |user| -%>
-				<% next if users[user] -%>
+				<% next if users[user.id] -%>
 				<li><label class="checkbox">
 					<% if canassign -%>
-						<%= check_box_tag "todo_item[users_new][#{user.id}]", true, @add_users[user.id] || false %>
+						<%= check_box_tag "todo_item[users_new][#{user.id}]", true, (@add_users[user.id] || false) %>
 					<% else -%>
 						<input type="checkbox" disabled>
 					<% end -%>

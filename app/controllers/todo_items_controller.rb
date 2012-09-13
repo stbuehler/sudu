@@ -45,7 +45,7 @@ class TodoItemsController < ApplicationController
         p[:users_new] ||= {}
         p[:users_old].keys.each do |userid|
           if p[:users_keep][userid]
-            @keep_users[userid] = true
+            @keep_users[userid.to_i] = true
             next
           end
           u = User.find(userid)
@@ -57,9 +57,9 @@ class TodoItemsController < ApplicationController
           change.status_append "Unassigned #{u.username}"
           @todo_item.users.delete(u)
         end
-        p[:users_new].keys.each do |email|
-          @add_users[email] = true
-          u = User.find_by_email(email)
+        p[:users_new].keys.each do |userid|
+          @add_users[userid.to_i] = true
+          u = User.find(userid)
           if u.nil?
             @todo_item.errors[:base] << "User #{userid} does not exist"
             next
@@ -96,13 +96,28 @@ class TodoItemsController < ApplicationController
           end
         end
       end
+      if can? :move, @todo_item.project
+        if p[:todo_list_id] != p[:todo_list_id_old]
+          newlist = TodoList.find(p[:todo_list_id])
+          if can? :move, newlist.project
+            change.status_append "Moved from #{@todo_item.list.project.name}: #{@todo_item.list.name} to #{newlist.project.name}: #{newlist.name}"
+            @todo_item.list = newlist
+            if !@todo_item.users.all? { |u| newlist.project.users.include?(u) }
+              # this will prevent saving the change, but still show up in the form
+              @todo_item.errors[:base] << "Not all assigned users have access to the target list"
+            end
+          else
+            @todo_item.errors[:base] << "You are not authorized to move items into the target list"
+          end
+        end
+      end
       if can? :assign_priority, @todo_item.project
         if p[:priority] != p[:priority_old]
           @todo_item.priority = p[:priority]
           change.status_append "Priority changed to #{@todo_item.priority_to_s}"
         end
       end
-      if @todo_item.title != p[:title] and !p[:title].empty?
+      if @todo_item.title != p[:title]
         change.status_append "Changed title to '#{p[:title]}'"
         @todo_item.title = p[:title]
       end
@@ -112,7 +127,7 @@ class TodoItemsController < ApplicationController
       end
       @comment = change.comment = p[:comment]
       changed = (!change.status.blank? or !change.comment.blank?)
-      @todo_item.save! if @todo_item.errors.empty?
+      @todo_item.save if @todo_item.errors.empty?
       @todo_item.changes << change if changed and @todo_item.errors.empty?
       raise ActiveRecord::Rollback unless @todo_item.errors.empty?
     end
