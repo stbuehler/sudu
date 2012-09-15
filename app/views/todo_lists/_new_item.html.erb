@@ -53,7 +53,25 @@
 <% end -%>
 		<div class="control-group">
 			<%= f.label :description, class: "control-label" %>
-			<div class="controls"><%= f.text_area :description, :size => "80x15", :class => "wide" %></div>
+			<div class="controls">
+				<ul id="ul-description-tabs" class="nav nav-tabs" style="display: none">
+					<li class="active"><a href="#edit-description" data-toggle="tab">Edit</a></li>
+					<li><a id="a-preview-description" href="#preview-description" data-toggle="tab">Preview</a></li>
+				</ul>
+				<div class="tab-content">
+					<div class="tab-pane active" id="edit-description">
+						<div><%= f.text_area :description, :size => "80x15", :class => "wide monospace" %></div>
+						<a class="btn btn-info" style="display: none; margin-top: 10px;" id="description-button">Preview</a>
+					</div>
+					<div class="tab-pane" id="preview-description">
+					</div>
+				</div>
+<script type="text/javascript">
+$('#description-button').show().click(function () {
+	markdown_preview('<%= markdown_path %>', '#todo_item_description', '#preview-description', '#ul-description-tabs', '#a-preview-description');
+});
+</script>
+			</div>
 		</div>
 		<div class="control-actions">
 			<%= f.submit :class => "btn btn-primary" %>
