@@ -3,6 +3,9 @@
 Devise.setup do |config|
   # ==> Mailer Configuration
   config.mailer_sender = "please-change-me-at-config-initializers-devise@example.com"
+
+  # setup Devise.secret_key. generate it with: rake secret
+  config.secret_key = ''
 end
 
 Sudu::Application.configure do
